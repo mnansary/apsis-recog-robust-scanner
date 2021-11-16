@@ -60,7 +60,7 @@ def toTfrecord(df,rnum,rec_path):
             serialized=example.SerializeToString()
             writer.write(serialized)  
 
-def createRecords(data,save_path,tf_size=10240):
+def createRecords(data,save_path,tf_size=128):
     '''
         creates tf records:
         args:
