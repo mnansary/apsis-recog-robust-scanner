@@ -23,6 +23,25 @@ OR use conda-
 * **conda**: use environment.yml: ```conda env create -f environment.yml```
 
 
+# dataset requirements
+
+create a dataset as follows:
+ 
+```
+dataset_folder
+    |-images
+        |-image_n.png
+        |-xyz_n.png
+        |-...........
+        |-...........
+
+    |-data.csv
+
+```
+* data.csv colums:
+    * filepath: /home/something/something/dataset_folder/images/imgxyz.png
+    * word    : text (ground_truth)
+
 
 # TODO
 - ```conda activate your_env```
