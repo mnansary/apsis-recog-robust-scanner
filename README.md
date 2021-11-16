@@ -2,11 +2,9 @@
 # synthetic words
 
 ```python
-Version: 0.1.4     
+Version: 0.0.1     
 ```
 ### **Related resources**:
-
-For a collection of related resources in Hand written OCR research [click here](https://docs.google.com/spreadsheets/d/1LcEsd3z6lv4MO-ynbAawEjJ27jvPUoFiU9adQkD9g1A/edit?usp=sharing) 
 
 
 **LOCAL ENVIRONMENT**  
@@ -17,11 +15,6 @@ Processor   : Intel® Core™ i5-8250U CPU @ 1.60GHz × 8
 Graphics    : Intel® UHD Graphics 620 (Kabylake GT2)  
 Gnome       : 3.28.2  
 ```
-# Environment Setup
->Assuming the **libraqm** complex layout is working properly, you can skip to **python requirements**. 
-*  ```sudo apt-get install libfreetype6-dev libharfbuzz-dev libfribidi-dev gtk-doc-tools```
-* Install libraqm as described [here](https://github.com/HOST-Oman/libraqm)
-* ```sudo ldconfig``` (librarqm local repo)
 
 **python requirements**
 * **pip requirements**: ```pip install -r requirements.txt``` 
@@ -32,9 +25,26 @@ OR use conda-
 
 
 # TODO
-- [ ] update datasets.md
-- [ ] update scripts.md
-- [x] synthetic words: printed and handwritten
-- [ ] indic-iit dataset
-- [ ] recheck-previous 3 datasets
+- ```conda activate your_env```
+- ```cd scripts```
+- ```python datagen.py data_dir identifier```
+
+```python
+
+usage: Recognizer Dataset Creating Script [-h] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] [--seq_max_len SEQ_MAX_LEN] data_dir iden
+
+positional arguments:
+  data_dir              Path of the source data folder that contains langauge datasets
+  iden                  identifier to identify the dataset
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --img_height IMG_HEIGHT
+                        height for each grapheme: default=64
+  --img_width IMG_WIDTH
+                        width for each grapheme: default=512
+  --seq_max_len SEQ_MAX_LEN
+                        the maximum length of data for modeling
+
+```
 

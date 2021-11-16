@@ -50,7 +50,7 @@ if __name__=="__main__":
     '''
         parsing and execution
     '''
-    parser = argparse.ArgumentParser("Recognizer Synthetic Dataset Creating Script")
+    parser = argparse.ArgumentParser("Recognizer Dataset Creating Script")
     parser.add_argument("data_dir", help="Path of the source data folder that contains langauge datasets")
     parser.add_argument("iden",help="identifier to identify the dataset")
     parser.add_argument("--img_height",required=False,default=64,help ="height for each grapheme: default=64")
