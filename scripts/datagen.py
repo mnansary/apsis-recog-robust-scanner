@@ -26,7 +26,7 @@ tqdm.pandas()
 # main
 #--------------------
 def main(args):
-
+    vocab_json  =   "../vocab.json"
     data_dir    =   args.data_dir
     img_height  =   int(args.img_height)
     img_width   =   int(args.img_width)
@@ -47,7 +47,8 @@ def main(args):
     save_path=create_dir(data_dir,iden)
     LOG_INFO(save_path)
     createRecords(df,save_path,tf_size)
-
+    with open(vocab_json, 'w') as fp:
+        json.dump({"vocab":vocab}, fp,sort_keys=True, indent=4,ensure_ascii=False)
 #-----------------------------------------------------------------------------------
 
 if __name__=="__main__":
