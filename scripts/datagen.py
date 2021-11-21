@@ -20,7 +20,7 @@ from ast import literal_eval
 from coreLib.utils import *
 from coreLib.processing import processData
 from coreLib.store import createRecords
-from coreLib.vocab import vocab
+from coreLib.vocab import vocabs
 tqdm.pandas()
 #--------------------
 # main
@@ -32,9 +32,13 @@ def main(args):
     img_width   =   int(args.img_width)
     iden        =   args.iden
     seq_max_len =   int(args.seq_max_len)
-    
+    tf_size     =   int(args.tf_size)
+    vocab_iden  =   args.vocab_iden
+
+    assert vocab_iden in vocabs.keys(),"invalid vocab name"
     assert iden is not None,"iden not found"
-        
+    
+    vocab=vocabs[vocab_iden]
     img_dim=(img_height,img_width)
     csv=os.path.join(data_dir,"data.csv")
     # processing
@@ -42,7 +46,7 @@ def main(args):
     # storing
     save_path=create_dir(data_dir,iden)
     LOG_INFO(save_path)
-    createRecords(df,save_path)
+    createRecords(df,save_path,tf_size)
 
 #-----------------------------------------------------------------------------------
 
@@ -53,8 +57,10 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser("Recognizer Dataset Creating Script")
     parser.add_argument("data_dir", help="Path of the source data folder that contains langauge datasets")
     parser.add_argument("iden",help="identifier to identify the dataset")
+    parser.add_argument("--seq_max_len",help=" the maximum length of data for modeling")
+    parser.add_argument("--vocab_iden",help=" the vocabulary to use. available: english_numbers,bangla_numbers,english_all,bangla_all")
+    parser.add_argument("--tf_size",required=False,default=128,help=" the size of  data to store in 1 tfrecord:default=128")
     parser.add_argument("--img_height",required=False,default=64,help ="height for each grapheme: default=64")
     parser.add_argument("--img_width",required=False,default=512,help ="width for each grapheme: default=512")
-    parser.add_argument("--seq_max_len",required=False,default=40,help=" the maximum length of data for modeling")
     args = parser.parse_args()
     main(args)

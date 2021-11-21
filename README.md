@@ -50,7 +50,7 @@ dataset_folder
 
 ```python
 
-usage: Recognizer Dataset Creating Script [-h] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] [--seq_max_len SEQ_MAX_LEN] data_dir iden
+usage: Recognizer Dataset Creating Script [-h] [--seq_max_len SEQ_MAX_LEN] [--vocab_iden VOCAB_IDEN] [--tf_size TF_SIZE] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH] data_dir iden
 
 positional arguments:
   data_dir              Path of the source data folder that contains langauge datasets
@@ -58,12 +58,15 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --seq_max_len SEQ_MAX_LEN
+                        the maximum length of data for modeling
+  --vocab_iden VOCAB_IDEN
+                        the vocabulary to use. available: english_numbers,bangla_numbers,english_all,bangla_all
+  --tf_size TF_SIZE     the size of data to store in 1 tfrecord:default=128
   --img_height IMG_HEIGHT
                         height for each grapheme: default=64
   --img_width IMG_WIDTH
                         width for each grapheme: default=512
-  --seq_max_len SEQ_MAX_LEN
-                        the maximum length of data for modeling
 
 ```
 

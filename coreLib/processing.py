@@ -174,6 +174,7 @@ def processLabels(df,vocab,max_len):
     GP=GraphemeParser(language=None)
     # process text
     ## components
+    df.word=df.word.progress_apply(lambda x:str(x))
     df["components"]=df.word.progress_apply(lambda x:GP.process(x))
     df.dropna(inplace=True)
     df["eg_label"]=df.components.progress_apply(lambda x:encode_label(x,vocab))
