@@ -70,3 +70,24 @@ optional arguments:
 
 ```
 
+- upon successful execution a config.json file will be created in the repo directory. 
+- use this config.json file while training.
+- zip the tfrecords folder and upload it to a kaggle-dataset (public)
+- the kaggle dataset should have the following structre:
+
+```
+* dataset ("/input/dataset/)
+|-dataset_iden
+ |-dataset_iden
+  |-x.tfrecord
+  |-x.tfrecord
+  |-x.tfrecord
+  .................
+|-config.json
+|-enc.h5
+|-seq.h5
+|-pos.h5
+|-fuse.h5
+```
+
+- if no pretrained models are provided: use_pretrained=False while training
