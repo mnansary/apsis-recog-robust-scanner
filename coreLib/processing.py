@@ -16,15 +16,15 @@ tqdm.pandas()
 # helpers
 #--------------------
 not_found=[]
-def pad_label(x,max_len,pad_value,start_end_value):
+def pad_label(x,max_len,vals):
     '''
         lambda function to create padded label for robust scanner
     '''
     if len(x)>max_len-2:
         return None
     else:
-        if start_end_value is not None:
-            x=[start_end_value]+x+[start_end_value]
+        (start_value,end_value,pad_value)=vals
+        x=[start_value]+x+[end_value]
         pad=[pad_value for _ in range(max_len-len(x))]
         return x+pad
         
@@ -179,9 +179,11 @@ def processLabels(df,vocab,max_len):
     df.dropna(inplace=True)
     df["eg_label"]=df.components.progress_apply(lambda x:encode_label(x,vocab))
     ### grapheme
-    start_end_value=len(vocab)+1
-    pad_value      =len(vocab)+2
-    df["label"]=df.eg_label.progress_apply(lambda x:pad_label(x,max_len,pad_value,start_end_value))
+    start_value    =vocab.index("start")
+    end_value      =vocab.index("end") 
+    pad_value      =vocab.index("pad")
+    vals=(start_value,end_value,pad_value)
+    df["label"]=df.eg_label.progress_apply(lambda x:pad_label(x,max_len,vals))
     return df 
 
 #------------------------------------------------
