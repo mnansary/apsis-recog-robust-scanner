@@ -15,6 +15,12 @@ tqdm.pandas()
 #--------------------
 # helpers
 #--------------------
+def reset(df):
+    # sort df
+    df.dropna(inplace=True)
+    df.reset_index(drop=True,inplace=True) 
+    return df 
+
 not_found=[]
 def pad_label(x,max_len,vals):
     '''
@@ -39,6 +45,7 @@ def encode_label(x,vocab):
             label.append(vocab.index(ch))
         except Exception as e:
             if ch not in not_found:not_found.append(ch)
+            return None
     return label
 
 def padWordImage(img,pad_loc,pad_dim,pad_type,pad_val):
@@ -131,7 +138,7 @@ def correctPadding(img,dim,ptype="central",pvalue=255):
     img=cv2.resize(img,(img_width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
     return img,mask 
 #---------------------------------------------------------------
-def processImages(df,img_dim,ptype="left",factor=32):
+def processImages(df,img_dim,temp_dir,ptype="left",factor=32):
     '''
         process a specific dataframe with filename,word,graphemes and mode
         args:
@@ -153,11 +160,16 @@ def processImages(df,img_dim,ptype="left",factor=32):
             mask[:,:imask]=1
             mask=mask.flatten().tolist()
             mask=[int(i) for i in mask]
-            cv2.imwrite(img_path,img)
+            
+            img_save_path=os.path.join(temp_dir,f"{idx}.png")
+            cv2.imwrite(img_save_path,img)
             masks.append(mask)
+            df.iloc[idx,0]=img_save_path
         except Exception as e:
+            masks.append(None)
             LOG_INFO(e)
-    df["mask"]=masks    
+    df["mask"]=masks
+    df=reset(df)
     return df
 
 #---------------------------------------------------------------
@@ -174,16 +186,28 @@ def processLabels(df,vocab,max_len):
     GP=GraphemeParser(language=None)
     # process text
     ## components
-    df.word=df.word.progress_apply(lambda x:str(x))
+    def cvt_str(x):
+        try:
+            return str(x)
+        except Exception as e:
+            return None
+
+    df.word=df.word.progress_apply(lambda x:cvt_str(x))
+    df=reset(df)
+    
     df["components"]=df.word.progress_apply(lambda x:GP.process(x))
-    df.dropna(inplace=True)
+    df=reset(df)
+    
     df["eg_label"]=df.components.progress_apply(lambda x:encode_label(x,vocab))
+    df=reset(df)
+
     ### grapheme
     start_value    =vocab.index("start")
     end_value      =vocab.index("end") 
     pad_value      =vocab.index("pad")
     vals=(start_value,end_value,pad_value)
     df["label"]=df.eg_label.progress_apply(lambda x:pad_label(x,max_len,vals))
+    df=reset(df)
     return df 
 
 #------------------------------------------------
@@ -197,15 +221,19 @@ def processData(csv,vocab,max_len,img_dim):
             img_dim     :   tuple of (img_height,img_width) 
             num_folds   :   creating folds of the data
     '''
+    data_dir=os.path.dirname(csv)
+    temp_dir=create_dir(data_dir,"temp")
+
     df=pd.read_csv(csv)
     # images
-    df=processImages(df,img_dim)
+    df=processImages(df,img_dim,temp_dir)
+    df.to_csv(csv,index=False)
     # labels
     df=processLabels(df,vocab,max_len)
     # save data
     cols=["filepath","mask","label"]
     df=df[cols]
-    df.dropna(inplace=True)
     df.to_csv(csv,index=False)
     LOG_INFO(f"Not Found:{not_found}")
+    
     return df
