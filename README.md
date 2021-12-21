@@ -1,19 +1,22 @@
 
-# synthetic words
+# Robust Scanner 
+
+**Tensorflow-2 implementation with TPU support**
 
 ```python
-Version: 0.0.1     
+Version: 0.0.2  
+Author : MD.Nazmuddoha Ansary
 ```
 ### **Related resources**:
 
 
 **LOCAL ENVIRONMENT**  
 ```python
-OS          : Ubuntu 18.04.3 LTS (64-bit) Bionic Beaver        
-Memory      : 7.7 GiB  
+OS          : Ubuntu 20.04.3 LTS       
+Memory      : 23.4 GiB 
 Processor   : Intel® Core™ i5-8250U CPU @ 1.60GHz × 8    
 Graphics    : Intel® UHD Graphics 620 (Kabylake GT2)  
-Gnome       : 3.28.2  
+Gnome       : 3.36.8 
 ```
 
 **python requirements**
@@ -43,10 +46,10 @@ dataset_folder
     * word    : text (ground_truth)
 
 
-# TODO
+# Execution
 - ```conda activate your_env```
 - ```cd scripts```
-- ```python datagen.py data_dir identifier```
+- ```python datagen.py data_dir identifier --seq_max_len 40 --vocab_iden all --tf_size 10240```
 
 ```python
 
@@ -61,7 +64,7 @@ optional arguments:
   --seq_max_len SEQ_MAX_LEN
                         the maximum length of data for modeling
   --vocab_iden VOCAB_IDEN
-                        the vocabulary to use. available: english_numbers,bangla_numbers,english_all,bangla_all
+                        the vocabulary to use. available: english_numbers,bangla_numbers,english_all,bangla_all,all
   --tf_size TF_SIZE     the size of data to store in 1 tfrecord:default=128
   --img_height IMG_HEIGHT
                         height for each grapheme: default=64
@@ -91,3 +94,5 @@ optional arguments:
 ```
 
 - if no pretrained models are provided: use_pretrained=False while training
+
+- use **notebooks/train.ipynb** for training with TPU
