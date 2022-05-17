@@ -12,6 +12,10 @@ import math
 from tqdm import tqdm
 from .utils import *
 tqdm.pandas()
+from indicparser import graphemeParser
+GP=graphemeParser("bangla")
+vd       =    ['া', 'ি', 'ী', 'ু', 'ূ', 'ৃ', 'ে', 'ৈ', 'ো', 'ৌ']
+cd       =    ['ঁ']
 #--------------------
 # helpers
 #--------------------
@@ -21,32 +25,6 @@ def reset(df):
     df.reset_index(drop=True,inplace=True) 
     return df 
 
-not_found=[]
-def pad_label(x,max_len,vals):
-    '''
-        lambda function to create padded label for robust scanner
-    '''
-    if len(x)>max_len-2:
-        return None
-    else:
-        (start_value,end_value,pad_value)=vals
-        x=[start_value]+x+[end_value]
-        pad=[pad_value for _ in range(max_len-len(x))]
-        return x+pad
-        
-def encode_label(x,vocab):
-    '''
-        encodes a label
-    '''
-    global not_found
-    label=[]
-    for ch in x:
-        try:
-            label.append(vocab.index(ch))
-        except Exception as e:
-            if ch not in not_found:not_found.append(ch)
-            return None
-    return label
 
 def padWordImage(img,pad_loc,pad_dim,pad_type,pad_val):
     '''
@@ -173,43 +151,36 @@ def processImages(df,img_dim,temp_dir,ptype="left",factor=32):
     return df
 
 #---------------------------------------------------------------
-def processLabels(df,vocab,max_len):
-    '''
-        processLabels:
-        * divides: word to - unicodes,components
-        e-->encoded
-        p-->paded
-        u-->unicode
-        g-->grapheme components
-        r-->raw with out start end
-    '''
-    GP=GraphemeParser(language=None)
-    # process text
-    ## components
-    def cvt_str(x):
-        try:
-            return str(x)
-        except Exception as e:
-            return None
-
-    df.word=df.word.progress_apply(lambda x:cvt_str(x))
-    df=reset(df)
-    
-    df["components"]=df.word.progress_apply(lambda x:GP.process(x))
-    df=reset(df)
-    
-    df["eg_label"]=df.components.progress_apply(lambda x:encode_label(x,vocab))
-    df=reset(df)
-
-    ### grapheme
-    start_value    =vocab.index("start")
-    end_value      =vocab.index("end") 
-    pad_value      =vocab.index("pad")
-    vals=(start_value,end_value,pad_value)
-    df["label"]=df.eg_label.progress_apply(lambda x:pad_label(x,max_len,vals))
-    df=reset(df)
-    return df 
-
+def get_label(text,vocab,max_len):
+    try:
+        _label=[]
+        text=str(text)
+        graphemes=GP.process(text)
+        for grapheme in graphemes:
+            _vd=None
+            _cd=None
+            for v in vd:
+                if v in grapheme:
+                    _vd=v
+                    grapheme=grapheme.replace(v,'')
+            for c in cd:
+                if c in grapheme:
+                    _cd=v
+                    grapheme=grapheme.replace(c,'')
+            _label.append(grapheme)
+            if _vd is not None:
+                _label.append(_vd)
+            if _cd is not None:
+                _label.append(_cd)
+        _label=["start"]+_label+["end"]
+        for p in range(max_len - len(_label)):
+            _label.append("pad")
+        label=[]
+        for v in _label:
+            label.append(vocab.index(v))
+        return label
+    except Exception as e:
+        return None
 #------------------------------------------------
 def processData(csv,vocab,max_len,img_dim):
     '''
@@ -229,11 +200,10 @@ def processData(csv,vocab,max_len,img_dim):
     df=processImages(df,img_dim,temp_dir)
     df.to_csv(csv,index=False)
     # labels
-    df=processLabels(df,vocab,max_len)
+    df["label"]=df.eg_label.progress_apply(lambda x:get_label(x,vocab,max_len))
+    df=reset(df)
     # save data
     cols=["filepath","mask","label"]
     df=df[cols]
     df.to_csv(csv,index=False)
-    LOG_INFO(f"Not Found:{not_found}")
-    
     return df

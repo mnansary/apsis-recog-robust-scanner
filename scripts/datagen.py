@@ -69,7 +69,7 @@ if __name__=="__main__":
     parser.add_argument("iden",help="identifier to identify the dataset")
     parser.add_argument("--seq_max_len",help=" the maximum length of data for modeling")
     parser.add_argument("--vocab_iden",help=" the vocabulary to use. available: english_numbers,bangla_numbers,english_all,bangla_all,all")
-    parser.add_argument("--tf_size",required=False,default=128,help=" the size of  data to store in 1 tfrecord:default=128")
+    parser.add_argument("--tf_size",required=False,default=1024,help=" the size of  data to store in 1 tfrecord:default=1024")
     parser.add_argument("--img_height",required=False,default=64,help ="height for each grapheme: default=64")
     parser.add_argument("--img_width",required=False,default=512,help ="width for each grapheme: default=512")
     args = parser.parse_args()
