@@ -200,7 +200,7 @@ def processData(csv,vocab,max_len,img_dim):
     df=processImages(df,img_dim,temp_dir)
     df.to_csv(csv,index=False)
     # labels
-    df["label"]=df.eg_label.progress_apply(lambda x:get_label(x,vocab,max_len))
+    df["label"]=df.word.progress_apply(lambda x:get_label(x,vocab,max_len))
     df=reset(df)
     # save data
     cols=["filepath","mask","label"]
