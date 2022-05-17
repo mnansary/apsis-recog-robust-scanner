@@ -163,10 +163,12 @@ def get_label(text,vocab,max_len):
                 if v in grapheme:
                     _vd=v
                     grapheme=grapheme.replace(v,'')
+                    break
             for c in cd:
                 if c in grapheme:
                     _cd=v
                     grapheme=grapheme.replace(c,'')
+                    break 
             _label.append(grapheme)
             if _vd is not None:
                 _label.append(_vd)
@@ -180,6 +182,7 @@ def get_label(text,vocab,max_len):
             label.append(vocab.index(v))
         return label
     except Exception as e:
+        print(e,text)
         return None
 #------------------------------------------------
 def processData(csv,vocab,max_len,img_dim):
